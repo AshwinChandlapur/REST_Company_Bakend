@@ -2,10 +2,22 @@ const express = require('express')
 const router = express.Router();
 
 
+var DataLayer = require("../../companydata/index.js")
+ 
  router.get("/",(req,res,next)=>{
-     res.status(200).json({
-         message:'Handling GET requests to /department'
-     })
+    try{
+        var username = req.query.company
+        var dept_id = req.query.dept_id
+        var dl = new DataLayer(username);
+        var department =  JSON.stringify(dl.getDepartment(username,dept_id))
+        res.header("Content-Type",'application/json');
+        res.status(200).json(department)
+    } catch (err){
+        res.header("Content-Type",'application/json');
+        res.status(400).json({
+            message: err
+        })
+    }
  })
 
 
