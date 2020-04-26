@@ -11,7 +11,14 @@ var DataLayer = require("../../companydata/index.js")
         var dl = new DataLayer(username);
         var department =  JSON.stringify(dl.getDepartment(username,dept_id))
         res.header("Content-Type",'application/json');
-        res.status(200).json(department)
+        if(department!=="null"){
+            res.status(200).json(department)
+        }else{
+            res.status(200).json({
+                message:'The entered dept_id is Invalid.'
+            })
+        }
+        
     } catch (err){
         res.header("Content-Type",'application/json');
         res.status(400).json({
@@ -19,7 +26,6 @@ var DataLayer = require("../../companydata/index.js")
         })
     }
  })
-
 
  router.post("/",(req,res,next)=>{
     res.status(200).json({
