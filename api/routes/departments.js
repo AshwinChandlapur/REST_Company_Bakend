@@ -7,9 +7,9 @@
 
  router.get("/",(req,res,next)=>{
     try{
-        var username = req.query.company
-        var dl = new DataLayer(username);
-        var departments =  JSON.stringify(dl.getAllDepartment(username))
+        var company = req.query.company
+        var dl = new DataLayer(company);
+        var departments =  JSON.stringify(dl.getAllDepartment(company))
         res.header("Content-Type",'application/json');
         res.status(200).json(departments)
     } catch (err){
