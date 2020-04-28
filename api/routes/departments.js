@@ -3,7 +3,6 @@
  
  
  var DataLayer = require("../../companydata/index.js")
- 
 
  router.get("/",(req,res,next)=>{
     try{

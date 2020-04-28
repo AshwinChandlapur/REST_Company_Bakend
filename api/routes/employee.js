@@ -170,4 +170,38 @@ router.put("/",(req,res,next)=>{
 })
 
 
+router.delete("/",(req,res,next)=>{
+    try{
+        var company = req.query.company
+        var emp_id = req.query.emp_id
+        var dl = new DataLayer(company);
+        
+        var timecards =  dl.getAllTimecard(emp_id)
+        for(var i=0;i<timecards.length;++i){
+            var timecard_id = timecards[i].timecard_id
+            dl.deleteTimecard(timecard_id)
+        }
+
+        var status =  dl.deleteEmployee(emp_id);
+        if(status>0){
+            res.header("Content-Type",'application/json');
+            res.status(200).json({
+                success: "Employee " + emp_id+ " succesfully deleted"
+            })
+        }else{
+            res.status(200).json({
+                message:'Unable to delete Employee. The entered emp_id is Invalid.'
+            })
+        }
+        
+    } catch (err){
+        res.header("Content-Type",'application/json');
+        res.status(400).json({
+            message: err
+        })
+    }
+ })
+
+ 
+
 module.exports = router;

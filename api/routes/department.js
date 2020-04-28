@@ -9,7 +9,7 @@ router.put("/",(req,res,next)=>{
         var company = req.body.company
         var dept_id = req.body.dept_id
         var dl = new DataLayer(company);
-        
+
         var defaults = dl.getDepartment(company,dept_id)
         var dept_name = req.body.dept_name || defaults.dept_name
         var dept_no = req.body.dept_no || defaults.dept_no
@@ -54,7 +54,6 @@ router.put("/",(req,res,next)=>{
 
 
 
- 
  router.get("/",(req,res,next)=>{
     try{
         var company = req.query.company
@@ -74,6 +73,44 @@ router.put("/",(req,res,next)=>{
         res.header("Content-Type",'application/json');
         res.status(400).json({
             message: err
+        })
+    }
+ })
+
+
+
+ router.delete("/",(req,res,next)=>{
+    try{
+        var company = req.query.company
+        var dept_id = req.query.dept_id
+        var dl = new DataLayer(company);
+
+        var employees =  dl.getAllEmployee(company)
+        for(var j=0;j<employees.length;++j){
+            var emp_id = employees[j].emp_id
+            var timecards =  dl.getAllTimecard(emp_id)
+            for(var i=0;i<timecards.length;++i){
+                dl.deleteTimecard(timecard_id)
+            }
+            dl.deleteEmployee(emp_id)
+        }
+        
+        var status =  dl.deleteDepartment(company,dept_id);
+        if(status>0){
+            res.header("Content-Type",'application/json');
+            res.status(200).json({
+                success: "Department " + dept_id+ " succesfully deleted"
+            })
+        }else{
+            res.status(200).json({
+                message:'Unable to delete dept. The entered dept_id is Invalid.'
+            })
+        }
+        
+    } catch (err){
+        res.header("Content-Type",'application/json');
+        res.status(400).json({
+            message: "Could Not Delete "
         })
     }
  })
@@ -109,6 +146,7 @@ router.put("/",(req,res,next)=>{
         })
     }
 })
+
 
 
 

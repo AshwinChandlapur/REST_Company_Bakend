@@ -20,9 +20,7 @@
     }
  })
 
-
  router.post("/",(req,res,next)=>{
-
     try{
         var company = req.body.company
         var emp_id = req.body.emp_id
@@ -41,7 +39,6 @@
 
         var dl = new DataLayer(company);
         var employees = dl.getAllEmployee(company)
-        
         
         if(business.emp_id_exists(employees,emp_id)){
             if(difference>0){
@@ -68,18 +65,112 @@
                 message: "Emp_Id Does not Exist."
             })
         }
-        
-        
-        
-        
-
+    
     }catch(err){
         console.log(err)
         res.status(400).json({
             message:err
         })
     }
+})
+
+
+
+router.put("/",(req,res,next)=>{
+    try{
+        var company = req.body.company
+        var timecard_id = req.body.timecard_id
+        var dl = new DataLayer(company);
+        var defaults = dl.getTimecard(timecard_id)
+        console.log(JSON.stringify(defaults))
+
+        var emp_id = req.body.emp_id || defaults.emp_id
+        var start_time = req.body.start_time || defaults.start_time
+        var end_time = req.body.end_time || defaults.end_time
+        
+        var timecard = dl.getTimecard(timecard_id)
+        timecard.set
+
+
+
+        
+        // var employees  = dl.getAllEmployee(company)
+        // var employee = dl.getEmployee(emp_id)
+        // var departments = dl.getAllDepartment(company)
+        // if(business.emp_id_exists(employees,emp_id)){
+        //     if(business.dept_id_exists(departments,dept_id)==true){
+        //         if(business.isFutureDate(hire_date)==false){
+        //             if(hire_date.getDay()>0 && hire_date.getDay()<=5){
+        //                 employee.setEmpName(emp_name)
+        //                 employee.setEmpNo(emp_no)
+        //                 employee.setHireDate(hire_date.toDateString())
+        //                 employee.setJob(job)
+        //                 employee.setSalary(salary)
+        //                 employee.setDeptId(dept_id)
+        //                 employee.setMngId(mng_id)
+                        
+        //                 var employee1 = dl.updateEmployee(employee)
+        //                 res.status(200).json({
+        //                     success: JSON.stringify(employee1)
+        //                 })
+        //             }else{
+        //                 res.status(200).json({
+        //                     message: "Hire_Date is a weekend."
+        //                 })
+        //             }
+        //         }else{
+        //             res.status(200).json({
+        //                 message: "Hire_Date is in Future"
+        //             })
+        //         }    
+        // }else{
+        //     res.status(200).json({
+        //         message: "Dept_id does not exist."
+        //     })
+        // }
+        // }else{
+        //     res.status(200).json({
+        //         message: "Emp_id does not exist."
+        //     })
+        // }
+        
+        
+
+    }catch(err){
+        console.log(err)
+        res.header("Content-Type",'application/json');
+        res.status(400).json({
+            error: err
+        })
+    }
 
 })
+
+
+router.delete("/",(req,res,next)=>{
+    try{
+        var company = req.query.company
+        var timecard_id = req.query.timecard_id
+        var dl = new DataLayer(company);
+        
+        var status =  dl.deleteTimecard(timecard_id);
+        if(status>0){
+            res.header("Content-Type",'application/json');
+            res.status(200).json({
+                success: "Timecard " + timecard_id+ " succesfully deleted"
+            })
+        }else{
+            res.status(200).json({
+                message:'Unable to delete Timecard. The entered timecard_id is Invalid.'
+            })
+        }
+        
+    } catch (err){
+        res.header("Content-Type",'application/json');
+        res.status(400).json({
+            message: err
+        })
+    }
+ })
 
 module.exports = router;
