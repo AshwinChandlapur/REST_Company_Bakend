@@ -8,29 +8,29 @@ router.put("/",(req,res,next)=>{
     try{
         var company = req.body.company
         var dept_id = req.body.dept_id
-        var dept_name = req.body.dept_name
-        var dept_no = req.body.dept_no
-        var location =  req.body.location
+        var dl = new DataLayer(company);
+        
+        var defaults = dl.getDepartment(company,dept_id)
+        var dept_name = req.body.dept_name || defaults.dept_name
+        var dept_no = req.body.dept_no || defaults.dept_no
+        var location =  req.body.location || defaults.location
         
     
-        var dl = new DataLayer(company);
+        
         var departments = dl.getAllDepartment(company)
         
 
         if(business.dept_id_exists(departments,dept_id)){
             if(business.dept_id_no_unique(departments,dept_id,dept_no)==true){
-                console.log("Good")
                 var department = dl.getDepartment(company,dept_id)
                 department.setLocation(location)
                 department.setDeptNo(dept_no)
                 department.setDeptName(dept_name)
                 var department1 = dl.updateDepartment(department)
-                console.log(department1)
                 res.status(200).json({
                     success: JSON.stringify(department1)
                 })
             }else{
-                console.log("Bad")
                 res.status(200).json({
                 error: "Duplicate Entry for Dept_no Found , Cannot Update."
             })

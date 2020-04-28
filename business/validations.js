@@ -23,9 +23,30 @@ module.exports = {
         return hasMatch
     },
 
+    mng_id_exists: function (employees,mng_id) {
+        var hasMatch =false;
+        for (var index = 0; index < employees.length; ++index) {
+            var individual_employee = employees[index];
+            if(individual_employee.mng_id == mng_id){
+                hasMatch = true
+                return hasMatch
+            }
+        }
+        return hasMatch
+    },
+    emp_id_exists: function (employees,emp_id) {
+        var hasMatch =false;
+        for (var index = 0; index < employees.length; ++index) {
+            var individual_employee = employees[index];
+            if(individual_employee.emp_id == emp_id){
+                hasMatch = true
+                return hasMatch
+            }
+        }
+        return hasMatch
+    },
+
     dept_id_no_unique: function(departments,dept_id,dept_no){
-        
-        
         var dept_nos = []
         
         for (var index = 0; index < departments.length; ++index) {
@@ -48,7 +69,7 @@ module.exports = {
         keys.forEach(function(k) {
             var v = obj[k];
             if(typeof v === 'object') {
-                count += findKeyValueCount(key, value, v)
+                count += module.exports.find_key_value_count(key, value, v)
             }
             else if(k === key && v === value) {
                 count += 1;
@@ -58,7 +79,16 @@ module.exports = {
     },
 
     isUnique: function(key, value, obj) {
-        return findKeyValueCount(key, value, obj) === 1;
+        return find_key_value_count(key, value, obj) === 0;
+    },
+
+    isFutureDate: function(idate){
+        var today = new Date().getTime()
+        if(idate - today > 0){
+            return true
+        }else{
+            return false
+        }
     }
 
 

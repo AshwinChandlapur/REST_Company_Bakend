@@ -42,23 +42,44 @@
         var dept_id = req.body.dept_id
         var mng_id = req.body.mng_id || 0
         
-        const [year,month,day] = [...hire_date.split('-')]
+
+        const year = hire_date.split('-')[0]
+        const month = hire_date.split('-')[1]
+        const day = hire_date.split('-')[2]
         const monthIndex = month -1
         const hire = new Date(year,monthIndex,day)
-
+        
         var dl = new DataLayer(company);
         var departments =  dl.getAllDepartment(company)
+        var employees = dl.getAllEmployee(company)
         
         if(business.dept_id_exists(departments,dept_id)==true){
-            var employee = new dl.Employee(emp_name,emp_no,hire,job,salary,dept_id,mng_id)
-            var employee1 = dl.insertEmployee(employee)
-            console.log(employee1)
-            res.status(200).json({
-                message: JSON.stringify(employee1)
-            })
+            if(business.find_key_value_count("emp_no",emp_no,JSON.stringify(employees))==0){
+                if(business.isFutureDate(hire)==false){
+                    if(hire.getDay()>0 && hire.getDay()<=5){
+                        var employee = new dl.Employee(emp_name,emp_no,hire.toDateString(),job,salary,dept_id,mng_id)
+                        var employee1 = dl.insertEmployee(employee)
+                        res.status(200).json({
+                            success: JSON.stringify(employee1)
+                        })
+                    }else{
+                        res.status(200).json({
+                            message: "Hire_Date is a weekend."
+                        })
+                    }
+                }else{
+                    res.status(200).json({
+                        message: "Hire_Date is in Future"
+                    })
+                }
+            }else{
+                res.status(200).json({
+                    message: "Emp_no already exists"
+                })
+            }
         }else{
             res.status(200).json({
-                message: "Duplicate Entry Found, Cannot Insert."
+                message: "Dept_id does not exist."
             })
         }
     }catch(err){
@@ -68,6 +89,83 @@
             message: err
         })
     }
+})
+
+
+router.put("/",(req,res,next)=>{
+    
+    try{
+        var company = req.body.company
+        var emp_id = req.body.emp_id
+        var dl = new DataLayer(company);
+        var defaults = dl.getEmployee(emp_id)
+        console.log(JSON.stringify(defaults))
+
+        var emp_name = req.body.emp_name || defaults.emp_name
+        var emp_no = req.body.emp_no || defaults.emp_no
+        var hire_date =  req.body.hire_date || defaults.hire_date
+        var job =  req.body.job || defaults.job
+        var salary =  req.body.salary || defaults.salary
+        var dept_id =  req.body.dept_id || defaults.dept_id
+        var mng_id =  req.body.mng_id || defaults.mng_id
+        
+        if(typeof hire_date == 'string'){
+            const year = hire_date.split('-')[0]
+            const month = hire_date.split('-')[1]
+            const day = hire_date.split('-')[2]
+            const monthIndex = month -1
+            hire_date = new Date(year,monthIndex,day)
+        }
+        var employees  = dl.getAllEmployee(company)
+        var employee = dl.getEmployee(emp_id)
+        var departments = dl.getAllDepartment(company)
+        if(business.emp_id_exists(employees,emp_id)){
+            if(business.dept_id_exists(departments,dept_id)==true){
+                if(business.isFutureDate(hire_date)==false){
+                    if(hire_date.getDay()>0 && hire_date.getDay()<=5){
+                        employee.setEmpName(emp_name)
+                        employee.setEmpNo(emp_no)
+                        employee.setHireDate(hire_date.toDateString())
+                        employee.setJob(job)
+                        employee.setSalary(salary)
+                        employee.setDeptId(dept_id)
+                        employee.setMngId(mng_id)
+                        
+                        var employee1 = dl.updateEmployee(employee)
+                        res.status(200).json({
+                            success: JSON.stringify(employee1)
+                        })
+                    }else{
+                        res.status(200).json({
+                            message: "Hire_Date is a weekend."
+                        })
+                    }
+                }else{
+                    res.status(200).json({
+                        message: "Hire_Date is in Future"
+                    })
+                }    
+        }else{
+            res.status(200).json({
+                message: "Dept_id does not exist."
+            })
+        }
+        }else{
+            res.status(200).json({
+                message: "Emp_id does not exist."
+            })
+        }
+        
+        
+
+    }catch(err){
+        console.log(err)
+        res.header("Content-Type",'application/json');
+        res.status(400).json({
+            error: err
+        })
+    }
+
 })
 
 

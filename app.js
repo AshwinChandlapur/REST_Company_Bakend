@@ -25,9 +25,4 @@ app.use("/CompanyServices/timecard",timecard)
 const timecards = require("./api/routes/timecards")
 app.use("/CompanyServices/timecards",timecards)
 
-
-
-
-
-
 module.exports = app;
