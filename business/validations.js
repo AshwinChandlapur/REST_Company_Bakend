@@ -89,6 +89,13 @@ module.exports = {
         }else{
             return false
         }
+    },
+    convertDate: function(idate){
+        const year = idate.split('-')[0]
+        const month = idate.split('-')[1]
+        const day = idate.split('-')[2]
+        const monthIndex = month -1
+        return new Date(year,monthIndex,day)
     }
 
 
