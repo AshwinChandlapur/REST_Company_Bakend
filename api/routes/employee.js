@@ -58,11 +58,17 @@
             if(business.find_key_value_count("emp_no",emp_no,JSON.stringify(employees))==0){
                 if(business.isFutureDate(hire)==false){
                     if(hire.getDay()>0 && hire.getDay()<=5){
-                        var employee = new dl.Employee(emp_name,emp_no,hire.toDateString(),job,salary,dept_id,mng_id)
-                        var employee1 = dl.insertEmployee(employee)
-                        res.status(200).json({
-                            success: JSON.stringify(employee1)
-                        })
+                        if(business.emp_no_exists(employees,emp_no)==false){
+                            var employee = new dl.Employee(emp_name,emp_no,hire.toDateString(),job,salary,dept_id,mng_id)
+                            var employee1 = dl.insertEmployee(employee)
+                            res.status(200).json({
+                                success: JSON.stringify(employee1)
+                            })
+                        }else{
+                            res.status(200).json({
+                                message: "Emp_No already exists."
+                            })
+                        }
                     }else{
                         res.status(200).json({
                             message: "Hire_Date is a weekend."
@@ -87,7 +93,7 @@
         console.log(err)
         res.header("Content-Type",'application/json');
         res.status(400).json({
-            message: err
+            message: "Please enter valid details to complete the request."
         })
     }
 })

@@ -27,13 +27,6 @@
         var start_time = req.body.start_time
         var end_time = req.body.end_time
         
-        var t1 = start_time.split(/[- \s+ :]/);
-        var d1 = new Date(Date.UTC(t1[0], t1[1]-1, t1[2], t1[3], t1[4], t1[5]))
-       
-        var t2 = end_time.split(/[- \s+ :]/);
-        var d2 = new Date(Date.UTC(t2[0], t2[1]-1, t2[2], t2[3], t2[4], t2[5]))
-        
-        
         var dl = new DataLayer(company);
         var employees = dl.getAllEmployee(company)
         
@@ -42,14 +35,14 @@
                 var s = moment(start_time,"YYYY/MM/DD hh:mm:ss").weekday()
                 var e = moment(end_time,"YYYY/MM/DD hh:mm:ss").weekday()
                 if(s>0 && s<=5 && e>0 && e<=5){
-                    var timecard = new dl.Timecard(d1.toDateString(),d2.toDateString(),emp_id)
+                    var timecard = new dl.Timecard(start_time,end_time,emp_id)
                     var timecard1 = dl.insertTimecard(timecard)
                     res.status(200).json({
                         success: JSON.stringify(timecard1)
                     })
                 }else{
                     res.status(200).json({
-                        message: "Start Time is on a weekend."
+                        message: "Start Time or End Time is on a weekend."
                     })
                 }
             }else{
@@ -86,37 +79,44 @@ router.put("/",(req,res,next)=>{
         var end_time = req.body.end_time || defaults.end_time
         
         var timecard = dl.getTimecard(timecard_id)
-
-        if(typeof start_time == 'string'){
-            var t1 = start_time.split(/[- \s+ :]/);
-            start_time = new Date(Date.UTC(t1[0], t1[1]-1, t1[2], t1[3], t1[4], t1[5]))
-        }
-
-        if(typeof end_time == 'string'){
-            var t2 = end_time.split(/[- \s+ :]/);
-            end_time = new Date(Date.UTC(t2[0], t2[1]-1, t2[2], t2[3], t2[4], t2[5]))
-        }
-
         var employees  = dl.getAllEmployee(company)
+
         if(business.emp_id_exists(employees,emp_id)){
-            var timecards = dl.getAllTimecard(emp_id)
-            if(business.timecard_id_exists(timecards,timecard_id)){
-                timecard.setStartTime(start_time.toDateString())
-                timecard.setEndTime(end_time.toDateString())
-                var timecard1 = dl.updateTimecard(timecard)
-                res.status(200).json({
-                    success: JSON.stringify(timecard1)
-                })
+            if(business.difference(start_time,end_time)>0){
+                var s = moment(start_time,"YYYY/MM/DD hh:mm:ss").weekday()
+                var e = moment(end_time,"YYYY/MM/DD hh:mm:ss").weekday()
+                if(s>0 && s<=5 && e>0 && e<=5){
+                    var timecards = dl.getAllTimecard(emp_id)
+                    if(business.timecard_id_exists(timecards,timecard_id)){
+                        timecard.setStartTime(start_time)
+                        timecard.setEndTime(end_time)
+                        var timecard1 = dl.updateTimecard(timecard)
+                        res.status(200).json({
+                            success: JSON.stringify(timecard1)
+                        })
+                    }else{
+                        res.status(200).json({
+                            message: "Time card Id does not exist."
+                        })
+                    }
+                }else{
+                    res.status(200).json({
+                        message: "Start Time or End Time is on a weekend."
+                    })
+                }
             }else{
                 res.status(200).json({
-                    message: "Time card Id does not exist."
+                    message: "Difference between start Time and End time is less than an hour."
                 })
-            }
+            } 
         }else{
             res.status(200).json({
-                message: "Emp Id does not exist."
+                message: "Emp_Id Does not Exist."
             })
         }
+
+        
+        
     }catch(err){
         console.log(err)
         res.header("Content-Type",'application/json');

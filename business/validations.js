@@ -47,6 +47,17 @@ module.exports = {
         }
         return hasMatch
     },
+    emp_no_exists: function (employees,emp_no) {
+        var hasMatch =false;
+        for (var index = 0; index < employees.length; ++index) {
+            var individual_employee = employees[index];
+            if(individual_employee.emp_no == emp_no){
+                hasMatch = true
+                return hasMatch
+            }
+        }
+        return hasMatch
+    },
     timecard_id_exists: function (timecards,timecard_id) {
         var hasMatch =false;
         for (var index = 0; index < timecards.length; ++index) {
