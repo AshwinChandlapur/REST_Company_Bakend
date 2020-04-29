@@ -100,7 +100,7 @@ router.put("/",(req,res,next)=>{
         var emp_id = req.body.emp_id
         var dl = new DataLayer(company);
         var defaults = dl.getEmployee(emp_id)
-        console.log(JSON.stringify(defaults))
+        
 
         var emp_name = req.body.emp_name || defaults.emp_name
         var emp_no = req.body.emp_no || defaults.emp_no

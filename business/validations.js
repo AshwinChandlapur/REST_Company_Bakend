@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 module.exports = {
     dept_no_exists: function (departments,dept_no) {
         var hasMatch =false;
@@ -45,7 +47,17 @@ module.exports = {
         }
         return hasMatch
     },
-
+    timecard_id_exists: function (timecards,timecard_id) {
+        var hasMatch =false;
+        for (var index = 0; index < timecards.length; ++index) {
+            var individual_employee = timecards[index];
+            if(individual_employee.timecard_id == timecard_id){
+                hasMatch = true
+                return hasMatch
+            }
+        }
+        return hasMatch
+    },
     dept_id_no_unique: function(departments,dept_id,dept_no){
         var dept_nos = []
         
@@ -96,6 +108,11 @@ module.exports = {
         const day = idate.split('-')[2]
         const monthIndex = month -1
         return new Date(year,monthIndex,day)
+    },
+    difference: function(start_time,end_time){
+        var time1 = moment(start_time, "YYYY/MM/DD hh:mm:ss")
+        var time2 = moment(end_time, "YYYY/MM/DD hh:mm:ss")
+        return time2.diff(time1,"hours")
     }
 
 

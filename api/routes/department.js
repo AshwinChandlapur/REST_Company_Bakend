@@ -15,11 +15,8 @@ router.put("/",(req,res,next)=>{
         var dept_no = req.body.dept_no || defaults.dept_no
         var location =  req.body.location || defaults.location
         
-    
-        
         var departments = dl.getAllDepartment(company)
         
-
         if(business.dept_id_exists(departments,dept_id)){
             if(business.dept_id_no_unique(departments,dept_id,dept_no)==true){
                 var department = dl.getDepartment(company,dept_id)
